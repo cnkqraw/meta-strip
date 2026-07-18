@@ -1,8 +1,8 @@
 {
   "name": "metastrip",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "A privacy-focused metadata cleaner for images, media, PDFs, and Office documents.",
+  "description": "A privacy-focused cloud metadata cleaner and inspector for images, media, PDFs, and Office documents.",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
@@ -13,10 +13,11 @@
     "node": ">=20.19.0"
   },
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "1.1.0",
+    "archiver": "7.0.1",
     "exifr": "7.1.3",
     "express": "5.2.1",
     "express-rate-limit": "8.6.0",
-    "@ffmpeg-installer/ffmpeg": "1.1.0",
     "file-type": "22.0.1",
     "helmet": "8.3.0",
     "jszip": "3.10.1",

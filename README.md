@@ -1,57 +1,50 @@
 # MetaStrip
 
-MetaStrip is a privacy-focused Node.js website that removes standard optional metadata from common files.
+A cloud metadata inspector and cleaner for images, video, audio, PDFs, and Microsoft Office files.
 
-Supported formats:
+## Features
 
-- Images: JPG, PNG, WebP, AVIF, TIFF
-- Video: MP4, MOV, MKV, WebM, AVI
-- Audio: MP3, M4A, WAV, FLAC, OGG
-- Documents: PDF, DOCX, XLSX, PPTX
+- Inspect metadata without producing a cleaned file
+- Remove EXIF, GPS, XMP, IPTC, media-container, PDF, and Office properties
+- Privacy scores with risk categories
+- Batch processing for up to eight files
+- ZIP downloads with a JSON removal report
+- Output verification after cleaning
+- Optional ICC colour-profile preservation
+- Automatic deletion and one-time download links
+- No database or permanent file storage
 
-## What it removes
-
-- Image EXIF, GPS, camera, device, creator, software, and timestamp metadata
-- Video and audio container metadata without re-encoding streams
-- PDF document information and catalog XMP metadata
-- Office core, extended, custom, thumbnail, and common comment-author metadata
-
-## Privacy controls
-
-- Files use random temporary names
-- One file is processed at a time to stay within low-memory hosting limits
-- The original upload is deleted immediately after processing
-- The cleaned copy expires after 10 minutes by default
-- Optional deletion happens after the first successful download
-- Every restart clears all temporary files
-- Upload folders are never exposed as static directories
-
-## Run locally
-
-Requires Node.js 20.19 or newer.
+## Local setup
 
 ```bash
-npm install
+npm install --package-lock=false --registry=https://registry.npmjs.org
+npm test
 npm start
 ```
 
 Open `http://localhost:3000`.
 
+## Render settings
+
+- Runtime: Node
+- Build command: `npm install --omit=dev --package-lock=false --registry=https://registry.npmjs.org`
+- Start command: `npm start`
+- Health check path: `/api/health`
+
+The health route is defined before rate limiting in version 2, so it is safe for Render health checks.
+
 ## Environment variables
 
-- `PORT`: web server port, default `3000`
-- `MAX_FILE_MB`: upload size limit, default `40`, maximum `100`
-- `FILE_TTL_MINUTES`: cleaned-file lifetime, default `10`, maximum `60`
-- `NODE_ENV`: set to `production` when deployed
-
-## Test
-
-```bash
-npm test
+```text
+NODE_ENV=production
+MAX_FILE_MB=40
+MAX_FILES=8
+MAX_TOTAL_MB=40
+FILE_TTL_MINUTES=10
 ```
 
-The smoke test creates sample image, video, PDF, and DOCX files with metadata, cleans them, verifies the results, and tests the HTTP upload and one-time download flow.
+Render provides `PORT` automatically.
 
-## Important limits
+## Important limitation
 
-MetaStrip removes standard optional metadata. It does not inspect visible content, OCR text, faces, watermarks, steganography, document body text, embedded attachments, or data held by the service where a file is later uploaded.
+MetaStrip removes metadata that its supported parsers detect. It does not remove visible text, faces, watermarks, audio content, hidden steganography, or unsupported proprietary metadata blocks.
