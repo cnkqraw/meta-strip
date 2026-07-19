@@ -48,7 +48,7 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'"],
-      styleSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", 'blob:', 'data:'],
       mediaSrc: ["'self'", 'blob:'],
       connectSrc: ["'self'"],
@@ -70,8 +70,15 @@ app.get('/api/health', (_request, response) => {
 
 app.use(express.static(PUBLIC_DIR, {
   extensions: ['html'],
-  maxAge: process.env.NODE_ENV === 'production' ? '1h' : 0,
+  maxAge: 0,
   etag: true,
+  setHeaders(response, filePath) {
+    if (filePath.endsWith('.html')) {
+      response.setHeader('Cache-Control', 'no-store');
+      return;
+    }
+    response.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+  },
 }));
 
 const apiLimiter = rateLimit({
