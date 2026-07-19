@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Inspect and remove EXIF, GPS, camera, author, timestamp, document, video, and audio metadata before sharing files.">
+  <meta name="theme-color" content="#080a0f">
+  <meta property="og:title" content="MetaStrip | Private metadata cleaner">
+  <meta property="og:description" content="Scan and remove hidden metadata from images, media, PDFs, and Office files.">
+  <meta property="og:type" content="website">
+  <title>MetaStrip | Private metadata cleaner</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="MetaStrip home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32">
+          <path d="M16 2.5 27 7v8.2c0 7.2-4.3 11.9-11 14.3C9.3 27.1 5 22.4 5 15.2V7l11-4.5Z"></path>
+          <path d="m11.2 16.2 3.1 3.1 6.8-7.2"></path>
+        </svg>
+      </span>
+      <span>MetaStrip</span>
+    </a>
+    <div class="topbar-actions">
+      <a class="nav-link" href="#privacy">Why metadata matters</a>
+      <span class="privacy-pill"><span class="pulse"></span>Temporary cloud processing</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">Share files, not your trail</div>
+      <h1>Remove hidden metadata<br><span>before it reveals too much.</span></h1>
+      <p class="hero-copy">Scan and strip GPS, camera details, owner names, timestamps, document properties, and media tags from files before you send them.</p>
+      <div class="hero-points" aria-label="Service highlights">
+        <span><svg viewBox="0 0 20 20"><path d="m5 10 3 3 7-7"></path></svg>No account</span>
+        <span><svg viewBox="0 0 20 20"><path d="m5 10 3 3 7-7"></path></svg>Automatic deletion</span>
+        <span><svg viewBox="0 0 20 20"><path d="m5 10 3 3 7-7"></path></svg>Cloud processing</span>
+      </div>
+    </section>
+
+    <section class="app-shell" aria-labelledby="cleaner-title">
+      <div class="mode-switch" role="tablist" aria-label="Choose a tool">
+        <button class="mode-button active" id="clean-mode" type="button" role="tab" aria-selected="true" data-mode="clean">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v6c0 5.2-3.1 8.5-8 10-4.9-1.5-8-4.8-8-10V6z"></path><path d="m8.5 12.3 2.2 2.2 4.8-5"></path></svg>
+          Clean files
+        </button>
+        <button class="mode-button" id="inspect-mode" type="button" role="tab" aria-selected="false" data-mode="inspect">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+          Inspect only
+        </button>
+      </div>
+
+      <div class="app-heading">
+        <div>
+          <p class="section-label" id="tool-label">Metadata cleaner</p>
+          <h2 id="cleaner-title">Drop files to clean them</h2>
+          <p id="tool-description">We scan, clean, verify, then prepare a private download.</p>
+        </div>
+        <div class="limit" id="file-limit">Up to 8 files · 40 MB total</div>
+      </div>
+
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose files or drop them here">
+        <input id="file-input" type="file" hidden multiple accept=".jpg,.jpeg,.png,.webp,.avif,.tif,.tiff,.mp4,.mov,.mkv,.webm,.avi,.mp3,.m4a,.wav,.flac,.ogg,.pdf,.docx,.xlsx,.pptx">
+        <div class="drop-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"></path>
+            <path d="M5 14.5v3A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-3"></path>
+          </svg>
+        </div>
+        <p class="drop-title">Drop your files here</p>
+        <p class="drop-subtitle">or <span>browse your device</span></p>
+        <div class="format-row" aria-label="Supported file groups">
+          <span>Images</span>
+          <span>Video</span>
+          <span>Audio</span>
+          <span>PDF</span>
+          <span>Office</span>
+        </div>
+      </div>
+
+      <div class="selected-section hidden" id="selected-section" aria-live="polite">
+        <div class="selected-heading">
+          <span id="selected-count">0 files selected</span>
+          <button class="text-button" id="clear-files" type="button">Clear all</button>
+        </div>
+        <div class="selected-files" id="selected-files"></div>
+      </div>
+
+      <div class="options-panel" id="clean-options">
+        <label class="option-row">
+          <span class="option-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 4a8 8 0 0 0 0 16c2.2-2.4 3.2-5.1 3.2-8S14.2 6.4 12 4Z"></path></svg>
+          </span>
+          <span class="option-copy">
+            <strong>Preserve colour profile</strong>
+            <small>Keep the ICC profile so edited photos retain accurate colour.</small>
+          </span>
+          <input id="preserve-icc" type="checkbox" checked>
+          <span class="switch" aria-hidden="true"></span>
+        </label>
+        <label class="option-row">
+          <span class="option-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M6 7h12M9 7V4h6v3m-8 0 1 13h8l1-13"></path></svg>
+          </span>
+          <span class="option-copy">
+            <strong>Delete after download</strong>
+            <small>The cleaned copy disappears after the first successful download.</small>
+          </span>
+          <input id="delete-after-download" type="checkbox" checked>
+          <span class="switch" aria-hidden="true"></span>
+        </label>
+      </div>
+
+      <button class="primary-button" id="action-button" type="button" disabled>
+        <span class="button-label">Remove metadata</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+      </button>
+
+      <div class="progress-card hidden" id="progress-card" aria-live="polite">
+        <div class="progress-head">
+          <div>
+            <p class="section-label">Secure processing</p>
+            <h3 id="progress-title">Preparing your files</h3>
+          </div>
+          <strong id="progress-percent">0%</strong>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-steps" id="progress-steps">
+          <div class="progress-step" data-step="0"><span>1</span><div><strong>Upload</strong><small>Transfer files securely</small></div></div>
+          <div class="progress-step" data-step="1"><span>2</span><div><strong>Analyze</strong><small>Find hidden metadata</small></div></div>
+          <div class="progress-step" data-step="2"><span>3</span><div><strong id="step-three-title">Remove</strong><small id="step-three-copy">Strip private fields</small></div></div>
+          <div class="progress-step" data-step="3"><span>4</span><div><strong>Verify</strong><small>Check the final file</small></div></div>
+        </div>
+      </div>
+
+      <div class="result-card hidden" id="result-card" aria-live="polite">
+        <div class="result-head">
+          <div class="success-icon" id="result-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="m6.5 12.5 3.4 3.4 7.7-8"></path></svg>
+          </div>
+          <div>
+            <p class="section-label" id="result-label">Cleaning complete</p>
+            <h3 id="result-title">Your files are private again.</h3>
+            <p id="result-copy">Metadata was removed and the cleaned files were verified.</p>
+          </div>
+        </div>
+
+        <div class="score-comparison" id="score-comparison">
+          <div class="score-block">
+            <div class="score-ring risk-ring" id="before-ring" style="--score: 0"><span id="before-score">0</span></div>
+            <div><span>Before</span><strong id="before-risk">High exposure</strong></div>
+          </div>
+          <div class="score-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"></path></svg>
+          </div>
+          <div class="score-block" id="after-score-block">
+            <div class="score-ring safe-ring" id="after-ring" style="--score: 100"><span id="after-score">100</span></div>
+            <div><span>After</span><strong id="after-risk">Private</strong></div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div><span>Files</span><strong id="result-file-count">0</strong></div>
+          <div><span id="fields-stat-label">Removed</span><strong id="result-field-count">0 fields</strong></div>
+          <div><span>Processing time</span><strong id="result-time">0.0 s</strong></div>
+          <div><span id="fourth-stat-label">Auto-delete</span><strong id="result-expiry">10 min</strong></div>
+        </div>
+
+        <div class="result-summary" id="result-summary"></div>
+        <div class="result-files" id="result-files"></div>
+
+        <div class="result-actions" id="result-actions">
+          <a class="download-button" id="download-button" href="#" download>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4"></path><path d="M5 19.5h14"></path></svg>
+            <span>Download cleaned file</span>
+          </a>
+          <button class="secondary-button" id="start-over" type="button">Start over</button>
+        </div>
+      </div>
+
+      <div class="error-card hidden" id="error-card" role="alert">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5m0 3.5v.01"></path><circle cx="12" cy="12" r="9"></circle></svg>
+        <span id="error-message"></span>
+      </div>
+    </section>
+
+    <section class="privacy-section" id="privacy">
+      <div class="section-heading">
+        <p class="section-label">What files can reveal</p>
+        <h2>Metadata often contains more than a filename.</h2>
+        <p>Many cameras, phones, editors, and office apps save private context inside the file itself.</p>
+      </div>
+      <div class="risk-grid">
+        <article class="risk-card high-risk-card">
+          <span class="risk-badge">High risk</span>
+          <div class="risk-icon"><svg viewBox="0 0 24 24"><path d="M12 21s7-5.3 7-12a7 7 0 1 0-14 0c0 6.7 7 12 7 12Z"></path><circle cx="12" cy="9" r="2.3"></circle></svg></div>
+          <h3>Exact location</h3>
+          <p>GPS coordinates can identify where a photo was taken, including a home, school, or workplace.</p>
+        </article>
+        <article class="risk-card">
+          <span class="risk-badge">Identity</span>
+          <div class="risk-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"></circle><path d="M5 20c.8-4 3.1-6 7-6s6.2 2 7 6"></path></svg></div>
+          <h3>Owner details</h3>
+          <p>Author names, account names, camera owner fields, comments, and company details may stay embedded.</p>
+        </article>
+        <article class="risk-card">
+          <span class="risk-badge">Device</span>
+          <div class="risk-icon"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="16" rx="2"></rect><path d="M9 7h6M10 17h4"></path></svg></div>
+          <h3>Camera and device</h3>
+          <p>Make, model, serial numbers, lens details, software, and editing tools can fingerprint a device.</p>
+        </article>
+        <article class="risk-card">
+          <span class="risk-badge">Timeline</span>
+          <div class="risk-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></svg></div>
+          <h3>Dates and history</h3>
+          <p>Creation, capture, modification, and digitization times can reveal when a file was made or edited.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="trust-section">
+      <div class="section-heading compact-heading">
+        <p class="section-label">Designed for safer sharing</p>
+        <h2>Clear results without permanent storage.</h2>
+      </div>
+      <div class="trust-grid">
+        <article>
+          <div class="trust-icon"><svg viewBox="0 0 24 24"><path d="M12 3 20 6v6c0 5.2-3.1 8.5-8 10-4.9-1.5-8-4.8-8-10V6z"></path><path d="m8.5 12.3 2.2 2.2 4.8-5"></path></svg></div>
+          <h3>Verified after cleaning</h3>
+          <p>MetaStrip scans the cleaned output again and shows whether readable metadata remains.</p>
+        </article>
+        <article>
+          <div class="trust-icon"><svg viewBox="0 0 24 24"><path d="M6 7h12M9 7V4h6v3m-8 0 1 13h8l1-13"></path></svg></div>
+          <h3>No permanent storage</h3>
+          <p>Uploads are deleted after processing. Downloads expire automatically or after their first use.</p>
+        </article>
+        <article>
+          <div class="trust-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16v12H4z"></path><path d="M8 7V5.5A3.5 3.5 0 0 1 11.5 2h1A3.5 3.5 0 0 1 16 5.5V7"></path><path d="M12 11v4"></path></svg></div>
+          <h3>Private download links</h3>
+          <p>Every cleaned result receives a long random token. Directory listing is disabled.</p>
+        </article>
+        <article>
+          <div class="trust-icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5z"></path><path d="M8 8h8M8 12h5M8 16h7"></path></svg></div>
+          <h3>Batch cleaning</h3>
+          <p>Clean several files in one request and receive one ZIP with a detailed removal report.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="formats-section">
+      <div>
+        <p class="section-label">Supported formats</p>
+        <h2>One cleaner for the files you share most.</h2>
+      </div>
+      <div class="formats-list">
+        <span>JPG</span><span>PNG</span><span>WebP</span><span>AVIF</span><span>TIFF</span>
+        <span>MP4</span><span>MOV</span><span>MKV</span><span>WebM</span><span>AVI</span>
+        <span>MP3</span><span>M4A</span><span>WAV</span><span>FLAC</span><span>OGG</span>
+        <span>PDF</span><span>DOCX</span><span>XLSX</span><span>PPTX</span>
+      </div>
+    </section>
+
+    <section class="faq-section">
+      <div class="section-heading compact-heading">
+        <p class="section-label">FAQ</p>
+        <h2>What MetaStrip removes and what it does not.</h2>
+      </div>
+      <div class="faq-list">
+        <details>
+          <summary>Does MetaStrip keep my files?</summary>
+          <p>No permanent storage is used. Uploaded files are deleted after processing. Cleaned files expire after the configured time or after their first download when that option is enabled.</p>
+        </details>
+        <details>
+          <summary>Will image quality change?</summary>
+          <p>Images are decoded, auto-rotated, and exported at high quality. Video and audio streams are copied without re-encoding. The optional ICC colour profile is preserved for images by default.</p>
+        </details>
+        <details>
+          <summary>Does it remove visible personal information?</summary>
+          <p>No. MetaStrip removes embedded metadata. It does not blur faces, remove visible text, erase watermarks, detect steganography, or remove personal details shown inside the content.</p>
+        </details>
+        <details>
+          <summary>Why does Windows still show a created date?</summary>
+          <p>Windows adds file-system dates when a file is downloaded or copied. Those dates belong to the local file entry and are separate from embedded EXIF or document metadata.</p>
+        </details>
+      </div>
+    </section>
+
+    <p class="fine-print">MetaStrip removes standard optional metadata that its supported parsers can detect. No cleaner guarantees removal of unknown proprietary blocks, hidden steganography, or personal details contained in visible or audible content.</p>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="/">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><path d="M16 2.5 27 7v8.2c0 7.2-4.3 11.9-11 14.3C9.3 27.1 5 22.4 5 15.2V7l11-4.5Z"></path><path d="m11.2 16.2 3.1 3.1 6.8-7.2"></path></svg>
+      </span>
+      <span>MetaStrip</span>
+    </a>
+    <span>Built by Mustaqim</span>
+  </footer>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
