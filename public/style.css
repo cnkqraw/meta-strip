@@ -670,3 +670,12 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
+
+/* Initial score values. JavaScript updates these after processing. */
+#before-ring {
+  --score: 0;
+}
+
+#after-ring {
+  --score: 100;
+}
